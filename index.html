@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>useCallback</title>
+  <!-- React CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <!-- Babel for JSX -->
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+<body style="font-family:Arial, sans-serif;">
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    const { useState, useCallback, memo } = React;
+
+
+    function ButtonOptimizado(props) {
+      console.log("RButtonOptimizado");
+      return (
+        <button onClick={props.onClick} >
+          Generar número random
+        </button>
+      );
+    }
+
+    const MemoButtonOptimizado = memo(ButtonOptimizado);
+
+
+    function ButtonNormal(props) {
+      console.log("ButtonNormal");
+      return (
+        <button onClick={props.onClick}>
+          Aumentar contador
+        </button>
+      );
+    }
+
+    function Card() {
+      const [randomNumber, setRandomNumber] = useState(0);
+      const [counter, setCounter] = useState(0);
+
+      // Función  con callback
+      const createRandom = useCallback(function() {
+        const newNumber = Math.floor(Math.random() * 100);
+        setRandomNumber(newNumber);
+      }, []);
+
+      // Función sin callback
+      function addCounter() {
+        setCounter(function(prev) {
+          return prev + 1;
+        });
+      }
+
+      return (
+        <div style={{
+          padding: '20px',
+          width: '300px',
+          textAlign: 'center',
+        }}>
+          <h2>Carta</h2>
+          <p><strong>Número aleatorio:</strong> {randomNumber}</p>
+          <p><strong>Contador:</strong> {counter}</p>
+          <div style={{ marginTop: '20px' }}>
+            <MemoButtonOptimizado onClick={createRandom} />
+            <ButtonNormal onClick={addCounter} />
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(React.createElement(Card));
+
+  </script>
+</body>
+</html>
